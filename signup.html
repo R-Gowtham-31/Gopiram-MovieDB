@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="images/favicon.jpg" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            background-image: url('https://static.vecteezy.com/system/resources/previews/027/541/573/non_2x/the-red-and-black-brick-themed-wallpapers-are-generated-with-the-help-of-artificial-intelligence-suitable-for-computer-or-wall-background-images-free-photo.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .main {
+            width: 300px;
+            padding: 20px;
+            background-color: #fefefe;
+            border: 3px solid #ff0000;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            text-align: center;
+            color: #ff0000;
+            margin-bottom: 20px;
+        }
+
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #333;
+            box-sizing: border-box;
+            background-color: #2e2e2e;
+            color: white;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: #d40000;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        .container a {
+            color: #ff0000;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .notification {
+            text-align: center;
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <h2>Signup</h2>
+        <form class="form">
+            <div class="container">
+                <label for="fullname"><b>Full Name</b></label>
+                <input type="text" placeholder="Enter Full Name" id="fullname" required>
+
+                <label for="email"><b>Email Address</b></label>
+                <input type="text" placeholder="Enter Email" id="email" required autocomplete="email">
+
+                <label for="username"><b>Create Username</b></label>
+                <input type="text" placeholder="Enter Username" id="username" required>
+
+                <label for="password"><b>Create Password</b></label>
+                <input type="password" placeholder="Enter Password" id="password" required autocomplete="new-password">
+
+                <label for="confirmPassword"><b>Re-enter Password</b></label>
+                <input type="password" placeholder="Re-enter Password" id="confirmPassword" required autocomplete="new-password">
+
+                <button type="submit" class="btn">Signup</button>
+                <button type="button" class="btn" onclick="redirectToLogin()">Login</button>
+
+                <div class="notification" id="notification"></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function redirectToLogin() {
+            window.location.href = 'login1.html';
+        }
+
+        const formEl = document.querySelector('.form');
+        const notificationEl = document.getElementById('notification');
+
+        formEl.addEventListener('submit', event => {
+            event.preventDefault();
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            const formData = {
+                fullname: fullname,
+                email: email,
+                username: username,
+                password: password
+            };
+
+            fetch('http://localhost:3000/signup', {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.message === 'Signup successful') {
+                    notificationEl.textContent = 'User registered successfully! Redirecting to login...';
+                    setTimeout(() => {
+                        window.location.href = 'login1.html';
+                    }, 2000); // Redirect after 2 seconds
+                } else {
+                    notificationEl.textContent = 'Signup failed: ' + data.message;
+                    notificationEl.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                notificationEl.textContent = 'An error occurred. Please try again later.';
+                notificationEl.style.color = 'red';
+            });
+        });
+    </script>
+</body>
+</html>
